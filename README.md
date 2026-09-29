@@ -1,6 +1,6 @@
 # Professor Outreach Automation — Master's 2027
 
-![Professor Outreach Automation Banner](data/banner.png)
+![Professor Outreach Automation Banner](assets/banner.png)
 
 A local Python tool that automates personalised cold-email outreach to university professors for fully funded Master's scholarship applications (2027 intake).
 
