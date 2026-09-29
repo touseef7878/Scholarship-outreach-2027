@@ -1,6 +1,6 @@
-# Professor Outreach Automation — China Master's 2027
+# Professor Outreach Automation — Master's 2027
 
-A local Python tool that automates personalised cold-email outreach to university professors for fully funded Master's scholarship applications in China (2027 intake).
+A local Python tool that automates personalised cold-email outreach to university professors for fully funded Master's scholarship applications (2027 intake).
 
 Built by **Touseef Ur Rehman** — BS Computer Science, HITEC University, Pakistan.
 
@@ -8,7 +8,7 @@ Built by **Touseef Ur Rehman** — BS Computer Science, HITEC University, Pakist
 
 ## Why This Was Built
 
-Cold-emailing professors is the most effective way to secure a supervisor acceptance letter, which is required for the Chinese Government Scholarship (CSC) and most university-level scholarship routes. Doing it manually across 100+ professors — each needing a personalised email, your CV attached, and a tracked status — is slow and error-prone.
+Cold-emailing professors is the most effective way to secure a supervisor acceptance letter, which is required for government scholarships and most university-level scholarship routes. Doing it manually across 100+ professors — each needing a personalised email, your CV attached, and a tracked status — is slow and error-prone.
 
 This tool solves that by:
 
@@ -73,7 +73,7 @@ professors.csv  ──►  AI Hook Generation  ──►  Full Email Body  ─�
 ### 2. Clone or download the project
 
 ```powershell
-cd path\to\china-scholarship-outreach-2027
+cd path\to\scholarship-outreach-2027
 ```
 
 ### 3. Set up the virtual environment
@@ -203,7 +203,7 @@ The `send` command raises an error unless you manually set this to `True`. Even 
 
 ## How to Adapt This for Your Own Outreach
 
-You can use this tool for any scholarship or job application outreach — not just China 2027. Here is what to change:
+You can use this tool for any scholarship or job application outreach. Here is what to change:
 
 ### 1. Replace the professor CSV
 
