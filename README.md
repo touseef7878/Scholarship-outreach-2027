@@ -1,5 +1,7 @@
 # Professor Outreach Automation — Master's 2027
 
+![Professor Outreach Automation Banner](data/banner.png)
+
 A local Python tool that automates personalised cold-email outreach to university professors for fully funded Master's scholarship applications (2027 intake).
 
 Built by **Touseef Ur Rehman** — BS Computer Science, HITEC University, Pakistan.
@@ -12,15 +14,22 @@ Cold-emailing professors is the most effective way to secure a supervisor accept
 
 This tool solves that by:
 
-- Storing all professor data (research areas, emails, fit scores, personalisation notes) in a single CSV, can build this from claude or chatgpt fully.
+- Storing all professor data (research areas, emails, fit scores, personalisation notes) in a single CSV — can build this from Claude or ChatGPT fully
 - Using **Groq AI** (free tier) to write a unique opening hook for each professor based on their research
-- Creating **Gmail drafts** via the official Gmail API — you review every email before it leaves your account
+- **Sending emails directly** via the Gmail API — fast, automated, no manual steps required
+- Alternatively, **creating Gmail drafts** if you prefer to review every email before it goes out
 - Tracking draft IDs, sent status, follow-up dates, and errors in the same CSV, so nothing gets duplicated or lost
 
 ---
 
 ## What It Does
 
+**Option A — Direct Send (recommended):**
+```
+professors.csv  ──►  AI Hook Generation  ──►  Full Email Body  ──►  Send Directly  ──►  CSV Updated
+```
+
+**Option B — Draft & Review:**
 ```
 professors.csv  ──►  AI Hook Generation  ──►  Full Email Body  ──►  Gmail Draft  ──►  You Review  ──►  Send
 ```
@@ -28,8 +37,8 @@ professors.csv  ──►  AI Hook Generation  ──►  Full Email Body  ─�
 1. Reads your professor database (CSV)
 2. Generates a personalised 2–3 sentence opening for each professor using Groq AI
 3. Assembles the full email: AI hook + your fixed intro + FYP paragraph + scholarship ask + signature
-4. Creates a Gmail draft with your CV attached — nothing is sent automatically
-5. Updates the CSV with draft ID and status after every action
+4. **Sends the email directly** — or creates a Gmail draft if you prefer to review first
+5. Updates the CSV with sent status (or draft ID) after every action
 6. Skips professors already drafted, sent, or replied to — no duplicates
 
 ---
@@ -108,7 +117,15 @@ GROQ_API_KEY=your_groq_api_key_here
 
 ## Daily Workflow
 
-### Step 1 — Preview emails (no Gmail, no AI)
+There are two ways to use this tool. Pick the one that suits you.
+
+---
+
+### 🚀 Option A — Direct Send (faster)
+
+Use this if you have already previewed and are confident in your emails.
+
+#### Step 1 — Preview emails (no Gmail, no AI)
 
 See the current email body for the next 5 eligible professors:
 
@@ -116,7 +133,7 @@ See the current email body for the next 5 eligible professors:
 .venv\Scripts\python.exe outreach.py preview --count 5
 ```
 
-### Step 2 — Enhance with AI (optional but recommended)
+#### Step 2 — Enhance with AI (optional but recommended)
 
 Generate a personalised opening hook for each professor using Groq AI.
 This only rewrites the first 2–3 sentences. Everything else stays unchanged.
@@ -131,7 +148,45 @@ If you are happy, save to CSV:
 .venv\Scripts\python.exe outreach.py enhance --count 10
 ```
 
-### Step 3 — Create Gmail drafts
+#### Step 3 — Send directly
+
+Enable sending in `config.py`:
+```python
+ALLOW_SEND = True
+```
+
+Then send (always start small):
+```powershell
+.venv\Scripts\python.exe outreach.py send --count 1
+```
+
+Check the sent message in Gmail before increasing the count. The CSV is updated automatically.
+
+#### Step 4 — Track
+
+```powershell
+.venv\Scripts\python.exe outreach.py stats
+```
+
+---
+
+### 📋 Option B — Draft & Review (safer for beginners)
+
+Use this if you want to read every email in Gmail before anything is sent.
+
+#### Step 1 — Preview emails (no Gmail, no AI)
+
+```powershell
+.venv\Scripts\python.exe outreach.py preview --count 5
+```
+
+#### Step 2 — Enhance with AI (optional but recommended)
+
+```powershell
+.venv\Scripts\python.exe outreach.py enhance --count 10
+```
+
+#### Step 3 — Create Gmail drafts
 
 On first run, a browser opens for Google OAuth. Sign in once — the token is saved for future runs.
 
@@ -145,23 +200,15 @@ Each draft contains:
 - Full email body (with AI hook if enhanced)
 - Your CV PDF attached
 
-### Step 4 — Review in Gmail
+#### Step 4 — Review in Gmail
 
 Open Gmail → Drafts. Read every email. Check the name, university, subject, and attachment are correct. Edit anything you want to change.
 
-### Step 5 — Send from Gmail
+#### Step 5 — Send from Gmail
 
 When you are satisfied, click **Send** inside Gmail directly.
 
-Or to send programmatically (only after setting `ALLOW_SEND = True` in `config.py`):
-
-```powershell
-.venv\Scripts\python.exe outreach.py send --count 1
-```
-
-Start with `--count 1`. Never send the whole dataset at once.
-
-### Step 6 — Track and follow up
+#### Step 6 — Track and follow up
 
 ```powershell
 .venv\Scripts\python.exe outreach.py stats
@@ -179,8 +226,8 @@ Professors marked `Draft created`, `Sent`, or `Replied` are automatically skippe
 | `outreach.py preview --count N` | Print next N emails to terminal (no Gmail, no AI) |
 | `outreach.py enhance --count N` | Save AI-enhanced opening hooks to CSV |
 | `outreach.py enhance --count N --preview` | Preview AI hooks without saving |
-| `outreach.py draft --count N` | Create N Gmail drafts with CV attached |
-| `outreach.py send --count N` | Send N emails (requires `ALLOW_SEND=True` in config.py) |
+| `outreach.py send --count N` | **Send N emails directly** (requires `ALLOW_SEND=True` in config.py) |
+| `outreach.py draft --count N` | Create N Gmail drafts with CV attached (for manual review before sending) |
 
 Default batch size is **5** (set in `config.py`).
 
@@ -188,16 +235,22 @@ Default batch size is **5** (set in `config.py`).
 
 ## Sending Lock
 
-Sending is deliberately disabled by default:
+Direct sending is disabled by default as a safety measure:
 
 ```python
 # config.py
 ALLOW_SEND = False
 ```
 
-The `send` command raises an error unless you manually set this to `True`. Even then, always start with `--count 1` and check the sent message in Gmail before sending more.
+The `send` command raises an error unless you manually set this to `True`. This prevents accidental bulk sends.
 
-**Never change `ALLOW_SEND` until you have reviewed your drafts.**
+**Recommended approach before enabling:**
+1. Run `preview` to check your email body
+2. Run `enhance` and review the AI hooks
+3. Create 1–2 drafts with `draft` and inspect them in Gmail
+4. Once satisfied, set `ALLOW_SEND = True` and start with `--count 1`
+
+> If you prefer to skip drafts entirely and send directly, that is fully supported — just enable `ALLOW_SEND` and use the `send` command. The draft workflow is there for those who want an extra review step.
 
 ---
 
