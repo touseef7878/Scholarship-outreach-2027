@@ -143,25 +143,24 @@ If anything looks wrong, edit it directly in Gmail before sending.
 
 ---
 
-## Step 6A — Send from Gmail (Recommended)
+## Step 6A — Send from Gmail (Recommended for Draft Path)
 
 Click **Send** inside Gmail for each draft you are happy with.
 
 This is the safest approach — you have full control over each email before it leaves your account.
 
+> Once you click Send in Gmail, the professor's row in the CSV still shows `Draft created` — **not** `Sent`. That is expected. The script only updates the CSV when you use the `send` command. Manually sent emails are not tracked back to the CSV automatically.
+
 ---
 
-## Step 6B — Send Directly via Script (Optional)
+## Step 6B — Send Directly via Script (Use Instead of Drafts — Not After)
 
-If you want to send programmatically instead of clicking Send in Gmail, do the following:
+> ⚠️ **This is an alternative to drafting, not a follow-up step.** The `send` command skips any professor already marked `Draft created`. If you have already drafted a batch, use Option 6A (click Send in Gmail) for that batch. Use this option on a fresh batch that has not been drafted yet.
+
+If you want to skip the draft step entirely and send programmatically, do the following:
 
 **First — enable sending in `config.py`:**
 
-Open `config.py` and change:
-```python
-ALLOW_SEND = False
-```
-to:
 ```python
 ALLOW_SEND = True
 ```
@@ -178,8 +177,8 @@ Check the sent message in Gmail. If it looks correct, send the rest:
 .venv\Scripts\python.exe outreach.py send --count 9
 ```
 
-> ⚠️ Always start with `--count 1`. Never run `send` on the full dataset at once.
-> Reset `ALLOW_SEND = False` in `config.py` when you are done sending.
+Always start with `--count 1`. Never run `send` on the full dataset at once.
+Reset `ALLOW_SEND = False` in `config.py` when you are done sending.
 
 ---
 
@@ -189,7 +188,7 @@ Check the sent message in Gmail. If it looks correct, send the rest:
 .venv\Scripts\python.exe outreach.py stats
 ```
 
-Expected after drafting 10:
+Expected after drafting 10 (Option 6A path):
 ```
 Total records: 64
 Valid public emails: 62
@@ -199,7 +198,7 @@ Not contacted    52
 Draft created    10
 ```
 
-Expected after sending 10:
+Expected after sending 10 directly (Option 6B path):
 ```
 Total records: 64
 Valid public emails: 62
@@ -208,6 +207,8 @@ Email status:
 Not contacted    52
 Sent             10
 ```
+
+> Note: If you sent via Gmail manually (clicked Send on drafts), the CSV still shows `Draft created` — the script only updates status when you use the `send` command.
 
 ---
 
@@ -226,27 +227,37 @@ Sent             10
 # Save AI hooks to CSV
 .venv\Scripts\python.exe outreach.py enhance --count 10
 
-# Create 10 Gmail drafts
+# --- PICK ONE PATH BELOW, NOT BOTH ---
+
+# PATH A: Create 10 Gmail drafts (then review and click Send in Gmail)
 .venv\Scripts\python.exe outreach.py draft --count 10
 
-# Send 1 email (ALLOW_SEND must be True in config.py)
-.venv\Scripts\python.exe outreach.py send --count 1
-
-# Send remaining (after testing with count 1)
-.venv\Scripts\python.exe outreach.py send --count 9
+# PATH B: Send directly (ALLOW_SEND must be True in config.py)
+.venv\Scripts\python.exe outreach.py send --count 1   # always test with 1 first
+.venv\Scripts\python.exe outreach.py send --count 9   # send the rest
 ```
+
+> `draft` and `send` operate on different professor sets only if you mix them across batches. Within the same batch, once a professor is drafted they are skipped by `send`. Choose one path per batch.
 
 ---
 
 ## Repeat for Next Batch
 
 After reviewing and sending the first 10, run the same sequence again for the next batch.
-Already processed professors are automatically skipped — no duplicates.
+Already processed professors (`Draft created`, `Sent`, `Replied`) are automatically skipped — no duplicates.
 
+**If you used the draft path (6A):**
 ```powershell
 .venv\Scripts\python.exe outreach.py enhance --count 10 --preview
 .venv\Scripts\python.exe outreach.py enhance --count 10
 .venv\Scripts\python.exe outreach.py draft --count 10
+```
+
+**If you used the direct send path (6B):**
+```powershell
+.venv\Scripts\python.exe outreach.py enhance --count 10 --preview
+.venv\Scripts\python.exe outreach.py enhance --count 10
+.venv\Scripts\python.exe outreach.py send --count 10
 ```
 
 You have **62 valid professor emails** in total. That is 6 batches of 10, plus 2 remaining.

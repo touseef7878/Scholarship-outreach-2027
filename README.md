@@ -49,13 +49,13 @@ professors.csv  ──►  AI Hook Generation  ──►  Full Email Body  ─�
 .
 ├── outreach.py              # Main script — all commands live here
 ├── config.py                # Paths, toggle flags, batch size
-├── gmail_service.py         # Gmail API: OAuth, draft creation, send (locked)
+├── gmail_service.py         # Gmail API: OAuth, draft creation, send
 ├── requirements.txt         # Python dependencies
-├── setup_windows.bat        # One-click setup on Windows
-├── run_preview.bat          # Preview emails without Gmail access
-├── create_5_drafts.bat      # Create first 5 drafts
 ├── .env                     # Your Groq API key (never commit this)
 ├── .gitignore               # Protects credentials, tokens, venv
+│
+├── assets/
+│   └── banner.png           # Project banner image
 │
 ├── data/
 │   └── professors.csv       # Your professor database
@@ -229,7 +229,9 @@ Professors marked `Draft created`, `Sent`, or `Replied` are automatically skippe
 | `outreach.py send --count N` | **Send N emails directly** (requires `ALLOW_SEND=True` in config.py) |
 | `outreach.py draft --count N` | Create N Gmail drafts with CV attached (for manual review before sending) |
 
-Default batch size is **5** (set in `config.py`).
+Default batch size is **5** (set in `config.py`). The `send` command defaults to `--count 1` as an extra safety measure.
+
+> **Important:** `send` and `draft` are separate paths — not sequential steps. Once a professor is drafted, the `send` command will skip them (they are already marked `Draft created`). Choose one path per batch: either draft for review, or send directly.
 
 ---
 
